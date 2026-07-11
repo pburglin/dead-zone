@@ -15,6 +15,10 @@ test("includes a complete survival loop", () => {
   for (const feature of ["function attack", "function search", "function zombiePhase", 'g.status="won"', 'g.status="lost"']) assert.ok(source.includes(feature), `missing ${feature}`);
 });
 
+test("includes the tactical art and rules upgrade", () => {
+  for (const feature of ["WebGLEffects", "webgl", "openDoors", "function openDoor", "function moveItem", "function giveItem", "hands:(Item|null)[]", "bag:(Item|null)[]", "noise:number", "survivor-piece", "zombie-piece"]) assert.ok(source.includes(feature), `missing ${feature}`);
+});
+
 test("production output renders the game menu", async () => {
   const { default: worker } = await import(new URL(`../dist/server/index.js?${Date.now()}`, import.meta.url));
   const response = await worker.fetch(new Request("http://localhost/",{headers:{accept:"text/html"}}),{ASSETS:{fetch:async()=>new Response("Not found",{status:404})}},{waitUntil(){},passThroughOnException(){}});
