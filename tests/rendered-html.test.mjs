@@ -43,6 +43,11 @@ test("supports mission selection, eight survivors, directional doors, pathfindin
   assert.ok(source.includes('Rifle:{name:"Rifle",icon:"⌁",range:3'));
 });
 
+test("switches supplied music by game state and separates persistent audio controls", async () => {
+  for (const feature of ["/music-gameplay.mp3", "/music-intro${introTrack.current}.webm", "deadzone-music", "deadzone-sound", "toggleMusic", "toggleSound", "global-audio"]) assert.ok(source.includes(feature), `missing audio feature ${feature}`);
+  await Promise.all([access(new URL("../public/music-gameplay.mp3",import.meta.url)),access(new URL("../public/music-intro1.webm",import.meta.url)),access(new URL("../public/music-intro2.webm",import.meta.url))]);
+});
+
 test("production output contains the game and migration", async () => {
   await Promise.all([access(new URL("../dist/server/index.js",import.meta.url)),access(new URL("../dist/client/zombie-victory.png",import.meta.url)),access(new URL("../dist/.openai/drizzle/0000_glamorous_imperial_guard.sql",import.meta.url))]);
 });

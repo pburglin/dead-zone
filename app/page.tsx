@@ -54,8 +54,8 @@ export default function Home(){
  const [game,setGame]=useState<Game>(()=>fresh("solo"));
  const [selected,setSelected]=useState<{x:number,y:number}|null>(null);
  const [toast,setToast]=useState("");
- const [sound,setSound]=useState(false);
- const audio=useRef<AudioContext|null>(null),musicTimer=useRef<ReturnType<typeof setInterval>|null>(null);
+ const [sound,setSound]=useState(true); const [music,setMusic]=useState(true);
+ const audio=useRef<AudioContext|null>(null),musicAudio=useRef<HTMLAudioElement|null>(null),introTrack=useRef(1+Math.floor(Math.random()*2));
  const [onlineRole,setOnlineRole]=useState<"host"|"guest">("host");
  const [offer,setOffer]=useState(""); const [answer,setAnswer]=useState(""); const [connected,setConnected]=useState(false);
  const [roomId,setRoomId]=useState(""); const [alias,setAlias]=useState(""); const [playerCount,setPlayerCount]=useState(1); const [isHost,setIsHost]=useState(false); const [confirmQuit,setConfirmQuit]=useState(false); const [sessionEnded,setSessionEnded]=useState(false);
@@ -70,12 +70,16 @@ export default function Home(){
  const weapon=hero?.hands.find(Boolean)||ITEMS.Machete;
  const ping=(s:string)=>{setToast(s); setTimeout(()=>setToast(""),1800)};
  const tone=(freq:number,duration=.12,type:OscillatorType="sawtooth",volume=.035)=>{const ctx=audio.current||(audio.current=new AudioContext()),o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.setValueAtTime(freq,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(Math.max(35,freq*.55),ctx.currentTime+duration);g.gain.setValueAtTime(volume,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);o.connect(g).connect(ctx.destination);o.start();o.stop(ctx.currentTime+duration)};
- const toggleSound=()=>{const on=!sound;setSound(on);if(on){tone(72,.7,"sine",.025);musicTimer.current=setInterval(()=>{tone(48+Math.random()*12,2.8,"sine",.012);if(Math.random()>.5)tone(96,.8,"triangle",.008)},3200)}else if(musicTimer.current){clearInterval(musicTimer.current);musicTimer.current=null}};
+ const toggleSound=()=>{const on=!sound;setSound(on);localStorage.setItem("deadzone-sound",String(on));if(on)tone(90,.12,"triangle",.025)};
+ const toggleMusic=()=>{const on=!music;setMusic(on);localStorage.setItem("deadzone-music",String(on));if(!on)musicAudio.current?.pause()};
  const announce=(s:string)=>{setAlert(s);setTimeout(()=>setAlert(""),1500)};
  const send=(g:Game)=>{if(roomId)fetch("/api/rooms",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"update",id:roomId,game:g})}).catch(()=>{})};
  const commit=(fn:(g:Game)=>Game)=>setGame(old=>{const n=fn(structuredClone(old)); send(n); localStorage.setItem("deadzone-save",JSON.stringify(n)); return n});
 
- useEffect(()=>{ const saved=localStorage.getItem("deadzone-save"); if(saved) try{setGame(JSON.parse(saved))}catch{};const id=new URLSearchParams(location.search).get("room");if(id)joinRoom(id)},[]);
+ useEffect(()=>{ const saved=localStorage.getItem("deadzone-save"); if(saved) try{setGame(JSON.parse(saved))}catch{};const sm=localStorage.getItem("deadzone-music"),ss=localStorage.getItem("deadzone-sound");if(sm!==null)setMusic(sm==="true");if(ss!==null)setSound(ss==="true");const id=new URLSearchParams(location.search).get("room");if(id)joinRoom(id)},[]);
+ useEffect(()=>{const a=musicAudio.current;if(!a)return;if(!music){a.pause();return}const gameplay=screen==="game"&&!briefing,target=gameplay?"/music-gameplay.mp3":`/music-intro${introTrack.current}.webm`;if(!a.src.endsWith(target)){a.src=target;a.loop=gameplay;a.volume=gameplay?.38:.28}a.play().catch(()=>{})},[screen,briefing,music]);
+ const resumeMusic=()=>{if(music&&musicAudio.current?.paused)musicAudio.current.play().catch(()=>{})};
+ const nextIntro=()=>{if(screen==="game"&&!briefing)return;introTrack.current=introTrack.current===1?2:1;const a=musicAudio.current;if(a&&music){a.src=`/music-intro${introTrack.current}.webm`;a.play().catch(()=>{})}};
  useEffect(()=>{if(!roomId)return;const timer=setInterval(async()=>{try{const r=await fetch(`/api/rooms?id=${encodeURIComponent(roomId)}`,{cache:"no-store"}),data=await r.json();if(!r.ok)return;if(data.ended){setSessionEnded(true);setScreen("menu");history.replaceState({},"",location.pathname);setRoomId("");return}setPlayerCount(data.player_count);if(!isHost&&data.game_json){const next=JSON.parse(data.game_json);setGame(old=>{if(next.mission!==old.mission)setBriefing(true);return next})}}catch{}},1200);return()=>clearInterval(timer)},[roomId,isHost]);
  const start=(mode:Mode)=>{const m=MISSIONS.find(v=>v.id===chosenMission)||MISSIONS[0],valid=chosenHeroes.slice(0,m.max);if(valid.length<m.min)return ping(`Select at least ${m.min} survivors`);const g=fresh(mode,chosenMission,valid);setGame(g);if(roomId)send(g);setBriefing(true);setScreen("game")};
  async function createRoom(){const g=fresh("online");setGame(g);const r=await fetch("/api/rooms",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"create",game:g})}),data=await r.json();if(!r.ok)return ping("Could not create room");setRoomId(data.id);setAlias("Player 1");setPlayerCount(1);setIsHost(true);setConnected(true);history.replaceState({},"",`?room=${data.id}`);setScreen("connect")}
@@ -114,7 +118,9 @@ export default function Home(){
  async function acceptAnswer(){try{await peer.current?.setRemoteDescription(JSON.parse(atob(answer.trim())))}catch{ping("That answer code is invalid")}}
 
  const canEvac=!game.objectives.length;
- return <main className="shell">
+ return <main className="shell" onPointerDown={resumeMusic}>
+  <audio ref={musicAudio} preload="auto" onEnded={nextIntro}/>
+  <div className="global-audio"><button onClick={toggleMusic} aria-label="Toggle music">{music?"♫":"♫̸"}</button><button onClick={toggleSound} aria-label="Toggle sound effects">{sound?"◉":"○"}</button></div>
   <WebGLEffects event={fx}/>{alert&&<div className="action-alert"><span>{alert}</span></div>}
   {toast&&<div className="toast">{toast}</div>}
   {screen==="menu"&&<section className="menu">
@@ -124,7 +130,7 @@ export default function Home(){
     <button onClick={()=>{setSetupMode("local");setScreen("setup")}}><b>COUCH CO-OP</b><span>Choose a mission and squad</span></button>
     <button onClick={createRoom}><b>ONLINE CO-OP</b><span>Create one link. Friends join instantly.</span></button>
    </div>
-   <div className="menu-row"><button className="textbtn" onClick={()=>setScreen("rules")}>HOW TO PLAY</button><button className="textbtn" onClick={()=>{const s=localStorage.getItem("deadzone-save");if(s){setGame(JSON.parse(s));setScreen("game")}}}>CONTINUE</button><button className="sound" onClick={toggleSound}>{sound?"♫ MUSIC & SOUND ON":"MUSIC & SOUND OFF"}</button></div>
+   <div className="menu-row"><button className="textbtn" onClick={()=>setScreen("rules")}>HOW TO PLAY</button><button className="textbtn" onClick={()=>{const s=localStorage.getItem("deadzone-save");if(s){setGame(JSON.parse(s));setScreen("game")}}}>CONTINUE</button><button className="sound" onClick={toggleMusic}>{music?"♫ MUSIC ON":"MUSIC OFF"}</button><button className="sound fx-toggle" onClick={toggleSound}>{sound?"◉ SOUND FX ON":"SOUND FX OFF"}</button></div>
    <div className="zombie-silhouette">🧟</div>{sessionEnded&&<div className="sessionnotice"><b>THE HOST ENDED THE GAME</b><button onClick={()=>setSessionEnded(false)}>DISMISS</button></div>}
   </section>}
   {screen==="setup"&&<section className="setup-screen"><button className="back" onClick={()=>setScreen(setupMode==="online"?"connect":"menu")}>← BACK</button><div className="setup-head"><span>MISSION CONTROL</span><h2>CHOOSE YOUR LAST STAND</h2><p>The host chooses the scenario and survivor roster. Every mission has its own map, squad limits, story, and objectives.</p></div><div className="mission-cards">{MISSIONS.map(m=><button key={m.id} className={chosenMission===m.id?"selected":""} onClick={()=>{setChosenMission(m.id);setChosenHeroes(v=>v.slice(0,m.max))}}><small>MISSION {MISSIONS.indexOf(m)+1}</small><b>{m.title}</b><p>{m.story}</p><i>{m.objectivesText}</i><span>SQUAD {m.min}–{m.max}</span></button>)}</div><div className="roster-head"><h3>SELECT SURVIVORS</h3><span>{chosenHeroes.length} / {(MISSIONS.find(m=>m.id===chosenMission)||MISSIONS[0]).max}</span></div><div className="roster-grid">{heroSeeds.map((h,i)=><button key={h[0]} className={`${chosenHeroes.includes(i)?"selected":""} recruit recruit-${i}`} onClick={()=>{const m=MISSIONS.find(v=>v.id===chosenMission)||MISSIONS[0];setChosenHeroes(v=>v.includes(i)?v.filter(x=>x!==i):v.length<m.max?[...v,i]:v)}}><span className="recruit-portrait"/><i>{h[1]}</i><b>{h[0]}</b><small>{h[2]}</small></button>)}</div><button className="primary launch" onClick={()=>start(setupMode)}>LAUNCH MISSION →</button></section>}
