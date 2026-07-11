@@ -48,6 +48,11 @@ test("switches supplied music by game state and separates persistent audio contr
   await Promise.all([access(new URL("../public/music-gameplay.mp3",import.meta.url)),access(new URL("../public/music-intro1.webm",import.meta.url)),access(new URL("../public/music-intro2.webm",import.meta.url))]);
 });
 
+test("moves traded items atomically, turns fallen survivors, and keeps evac routes openable", () => {
+  for (const feature of ["from.bag[index]=null", "to.bag[dest]={...source}", 'kind:"walker",x:h.x,y:h.y', "g.heroes=g.heroes.filter(h=>h.hp>0)", "makeDoors", '"0,1|0,2","0,1"', '"7,4|7,5","7,4"']) assert.ok(source.includes(feature), `missing bugfix ${feature}`);
+  assert.ok(!source.includes("findIndex(v=>v===item)"),"identity-based inventory removal must not return");
+});
+
 test("production output contains the game and migration", async () => {
   await Promise.all([access(new URL("../dist/server/index.js",import.meta.url)),access(new URL("../dist/client/zombie-victory.png",import.meta.url)),access(new URL("../dist/.openai/drizzle/0000_glamorous_imperial_guard.sql",import.meta.url))]);
 });
