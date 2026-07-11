@@ -69,13 +69,21 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-11"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-12"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
 
 test("guarantees every starting squad can breach doors", () => {
   for (const feature of ["hasBreacher", "axeBearer", 'partyIndex===axeBearer?ITEMS["Fire Axe"]']) assert.ok(source.includes(feature), `missing breaching safeguard ${feature}`);
+});
+
+test("cancels rooms immediately and exposes one accessible audio control set", async () => {
+  assert.ok(source.includes('className="back" onClick={terminateGame}>← CANCEL ROOM'));
+  assert.ok(!source.includes('className="sound" onClick={toggleMusic}'));
+  for (const feature of ["Turn music off", "Turn music on", "Turn sound effects off", "Turn sound effects on", "data-tooltip"]) assert.ok(source.includes(feature), `missing audio control behavior ${feature}`);
+  const audioCss=await readFile(new URL("../app/audio.css",import.meta.url),"utf8");
+  for (const feature of ["content:attr(data-tooltip)", ":hover:after", ":focus-visible:after"]) assert.ok(audioCss.includes(feature), `missing tooltip style ${feature}`);
 });
 
 test("production output contains the game and migration", async () => {
