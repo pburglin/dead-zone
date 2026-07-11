@@ -1,0 +1,19 @@
+.boardwrap{overflow:auto!important;align-items:flex-start;justify-content:flex-start!important;scroll-behavior:smooth}
+.board{flex:0 0 auto;transform-origin:top left}
+.initiative-dock{position:fixed;left:12px;bottom:14px;width:205px;padding:9px;background:#0c0e0cf2;border:1px solid #4c554b;box-shadow:4px 5px 18px #000;z-index:30;display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.initiative-dock small{grid-column:1/-1;color:#d9c54a;font:9px Arial;letter-spacing:.18em}
+.initiative-dock button{display:flex;justify-content:space-between;gap:4px;padding:6px;background:#242a23;border:1px solid #495047;color:#ddd;font-size:9px}
+.initiative-dock button:disabled{opacity:.35;cursor:default}.initiative-dock button:not(:disabled):hover{background:#b42f29}.initiative-dock b{color:#e3ce47}
+.zoom-controls{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:35;display:flex;align-items:center;background:#0b0d0be8;border:1px solid #687064;box-shadow:3px 4px 14px #000}
+.zoom-controls button{width:38px;height:34px;background:#292e28;color:#fff;border:0;font-size:22px}.zoom-controls span{min-width:62px;text-align:center;font:11px Arial;color:#e4d34d}
+.hero-layer .survivor-piece{animation:survivor-breathe 2.4s ease-in-out infinite;transform-origin:50% 85%}
+.cell[data-active="true"] .survivor-piece{animation:active-survivor 1.15s ease-in-out infinite;filter:drop-shadow(0 0 7px #f4d93e)}
+.zombie-layer .zombie-piece{animation:zombie-prowl 2.1s ease-in-out infinite;transform-origin:50% 90%}.zombie-layer .zombie-piece:nth-child(2n){animation-delay:-.7s}.zombie-layer .zombie-runner{animation-duration:.7s}.zombie-layer .zombie-brute{animation-name:brute-loom;animation-duration:1.5s}
+.crate.hot{animation:objective-pulse 1s ease-out infinite}
+@keyframes survivor-breathe{0%,100%{transform:rotate(-1deg) scale(1)}50%{transform:rotate(1.5deg) scale(1.035)}}
+@keyframes active-survivor{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(2deg) scale(1.1)}}
+@keyframes zombie-prowl{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(4deg) translateY(-3px) scale(1.03)}}
+@keyframes brute-loom{0%,100%{transform:scale(1) rotate(-1deg)}50%{transform:scale(1.08) rotate(1deg)}}
+@keyframes objective-pulse{0%{filter:drop-shadow(0 0 1px #f33);transform:scale(.95)}60%{filter:drop-shadow(0 0 12px #ff2d21);transform:scale(1.15)}100%{filter:drop-shadow(0 0 1px #f33);transform:scale(.95)}}
+@media(max-width:900px){.initiative-dock{position:sticky;left:0;bottom:0;width:100%;grid-template-columns:repeat(4,1fr)}.zoom-controls{bottom:10px}}
+@media(prefers-reduced-motion:reduce){.survivor-piece,.zombie-piece,.crate.hot{animation:none!important}.boardwrap{scroll-behavior:auto}}

@@ -60,6 +60,14 @@ test("targets exact doors, layers board assets, separates survivor art, and mark
   await Promise.all([access(new URL("../public/survivor-bodies.png",import.meta.url)),access(new URL("../public/survivor-portraits.png",import.meta.url))]);
 });
 
+test("supports tactical initiative, survivor specialties, and expanding animated maps", async () => {
+  for (const feature of ["yieldTo", "INITIATIVE PASSED", "SLIPPERY", "FREE SEARCH", "FREE MOVE", "BONUS MELEE", "BONUS RANGED", "MELEE +1 DMG", "RANGED +1 DMG", "map.w*map.h", "i%map.w", "scrollIntoView", "zoom-controls", "data-active"]) assert.ok(source.includes(feature), `missing tactical expansion ${feature}`);
+  assert.ok(source.includes('if(target && lineOfSight(hero,target,effectiveRange)){attack(target.id);return}'));
+  assert.ok(source.includes('if(d===1){const trapped='), "an adjacent occupied zone must remain a valid move destination");
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of ["overflow:auto", "survivor-breathe", "zombie-prowl", "brute-loom", "prefers-reduced-motion"]) assert.ok(motion.includes(feature), `missing map motion ${feature}`);
+});
+
 test("production output contains the game and migration", async () => {
   await Promise.all([access(new URL("../dist/server/index.js",import.meta.url)),access(new URL("../dist/client/zombie-victory.png",import.meta.url)),access(new URL("../dist/.openai/drizzle/0000_glamorous_imperial_guard.sql",import.meta.url))]);
 });
