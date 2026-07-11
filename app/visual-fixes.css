@@ -1,0 +1,22 @@
+/* Deterministic board stack: terrain < sewer < doors < zombies < markers < survivors */
+.cell{z-index:0}
+.cell:after,.concrete{z-index:1!important}
+.spawn-hole{position:absolute;left:13%;bottom:12%;width:58%;height:35%;border-radius:50%;background:radial-gradient(ellipse,#040504 0 42%,#282b28 44% 57%,#0c0d0c 59% 65%,transparent 67%);box-shadow:0 5px 7px #000b;z-index:5;transform:rotate(-8deg)}
+.spawn-hole:before{content:"";position:absolute;left:8%;top:-18%;width:86%;height:48%;border-radius:50%;background:repeating-linear-gradient(90deg,#191c19 0 6%,#4a4d47 7% 12%);border:2px solid #0b0c0b;transform:rotate(-14deg);transform-origin:left bottom;box-shadow:0 4px 5px #000}
+.spawn-hole i{position:absolute;inset:31% 34%;border-radius:50%;background:#8e2d27;box-shadow:0 0 12px #e04a39}
+.door{z-index:10!important}.door.targeted{outline:3px solid #f2d548;box-shadow:0 0 14px #f2d548}
+.pieces{z-index:auto!important;pointer-events:none}.zombie-layer{z-index:20!important}.crate{z-index:30!important}.hero-layer{z-index:40!important}.tilelabel{z-index:6}
+.zombie-piece{z-index:20}.survivor-piece{z-index:40}
+
+/* Separate, proportionally correct body and portrait sprite sheets. */
+.survivor-piece{width:42px;height:56px;aspect-ratio:3/4;background-image:url('/survivor-bodies.png')!important;background-size:400% 200%!important;background-repeat:no-repeat!important;background-color:transparent!important}
+.survivor-0{background-position:0 0!important}.survivor-1{background-position:33.333% 0!important}.survivor-2{background-position:66.666% 0!important}.survivor-3{background-position:100% 0!important}
+.survivor-4{background-position:0 100%!important}.survivor-5{background-position:33.333% 100%!important}.survivor-6{background-position:66.666% 100%!important}.survivor-7{background-position:100% 100%!important}
+.portrait{width:48px;height:48px;flex:0 0 48px;aspect-ratio:1;background-image:url('/survivor-portraits.png')!important;background-size:400% 200%!important;background-repeat:no-repeat!important}
+.portrait-0{background-position:0 0!important}.portrait-1{background-position:33.333% 0!important}.portrait-2{background-position:66.666% 0!important}.portrait-3{background-position:100% 0!important}
+.portrait-4{background-position:0 100%!important}.portrait-5{background-position:33.333% 100%!important}.portrait-6{background-position:66.666% 100%!important}.portrait-7{background-position:100% 100%!important}
+.recruit{height:auto;min-height:190px}.recruit-portrait{display:block;width:100%;height:auto;aspect-ratio:1;background-image:url('/survivor-portraits.png')!important;background-size:400% 200%!important;background-repeat:no-repeat!important}
+.recruit-0 .recruit-portrait{background-position:0 0!important}.recruit-1 .recruit-portrait{background-position:33.333% 0!important}.recruit-2 .recruit-portrait{background-position:66.666% 0!important}.recruit-3 .recruit-portrait{background-position:100% 0!important}
+.recruit-4 .recruit-portrait{background-position:0 100%!important}.recruit-5 .recruit-portrait{background-position:33.333% 100%!important}.recruit-6 .recruit-portrait{background-position:66.666% 100%!important}.recruit-7 .recruit-portrait{background-position:100% 100%!important}
+.recruit>i{top:auto;bottom:40px}
+@media(max-width:700px){.survivor-piece{width:30px;height:40px}.portrait{width:42px;height:42px;flex-basis:42px}.recruit{min-height:150px}}

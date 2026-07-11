@@ -53,6 +53,13 @@ test("moves traded items atomically, turns fallen survivors, and keeps evac rout
   assert.ok(!source.includes("findIndex(v=>v===item)"),"identity-based inventory removal must not return");
 });
 
+test("targets exact doors, layers board assets, separates survivor art, and marks sewer spawns", async () => {
+  for (const feature of ["selectedDoor", "setSelectedDoor(door)", "selectedDoor&&nearby.includes(selectedDoor)", "zombie-layer", "hero-layer", "spawn-hole"]) assert.ok(source.includes(feature), `missing board correction ${feature}`);
+  const visual=await readFile(new URL("../app/visual-fixes.css",import.meta.url),"utf8");
+  for (const feature of ["z-index:10", "z-index:20", "z-index:30", "z-index:40", "survivor-bodies.png", "survivor-portraits.png", "aspect-ratio:3/4", "aspect-ratio:1"]) assert.ok(visual.includes(feature), `missing visual layer ${feature}`);
+  await Promise.all([access(new URL("../public/survivor-bodies.png",import.meta.url)),access(new URL("../public/survivor-portraits.png",import.meta.url))]);
+});
+
 test("production output contains the game and migration", async () => {
   await Promise.all([access(new URL("../dist/server/index.js",import.meta.url)),access(new URL("../dist/client/zombie-victory.png",import.meta.url)),access(new URL("../dist/.openai/drizzle/0000_glamorous_imperial_guard.sql",import.meta.url))]);
 });
