@@ -31,6 +31,18 @@ test("supports host termination and a recoverable illustrated defeat", () => {
   assert.ok(css.includes("zombie-victory.png"));
 });
 
+test("uses illustrated equipment and blocks room boundaries without open doors", () => {
+  for (const feature of ["equipment-atlas.png", "item-rifle", "item-shotgun", "item-medkit", "background-size:1110% 465%", "linear-gradient(0deg"]) assert.ok(css.includes(feature), `missing visual correction ${feature}`);
+  for (const feature of ["const canCross", "map.walls.has(key)", "map.doors.has(e)&&open.includes(e)", "pathTo(z,t,g.openDoors)"]) assert.ok(source.includes(feature), `missing movement guard ${feature}`);
+});
+
+test("supports mission selection, eight survivors, directional doors, pathfinding, and correct range", () => {
+  for (const feature of ["NO QUIET WARD", "BLACKOUT AT PRECINCT 9", "Nova", "Father Eli", "Jinx", "Bear", "doorSide", "door-top", "door-left", "pathTo", "lineOfSight", "d>=range", "MISSION CONTROL", "missionbrief", "AudioContext"]) assert.ok((source+css).includes(feature), `missing expansion ${feature}`);
+  assert.ok(source.includes('Machete:{name:"Machete",icon:"🗡",range:1'));
+  assert.ok(source.includes('Shotgun:{name:"Shotgun",icon:"▰",range:2'));
+  assert.ok(source.includes('Rifle:{name:"Rifle",icon:"⌁",range:3'));
+});
+
 test("production output contains the game and migration", async () => {
   await Promise.all([access(new URL("../dist/server/index.js",import.meta.url)),access(new URL("../dist/client/zombie-victory.png",import.meta.url)),access(new URL("../dist/.openai/drizzle/0000_glamorous_imperial_guard.sql",import.meta.url))]);
 });
