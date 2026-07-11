@@ -3,7 +3,7 @@
 .cell:after,.concrete{z-index:1!important}
 .spawn-hole{position:absolute;left:8%;bottom:4%;width:74%;height:72%;z-index:5;background:url('/sewer-manhole-v2.png') center/contain no-repeat;filter:drop-shadow(0 5px 4px #000b);transform:rotate(-4deg)}
 .spawn-hole:before,.spawn-hole i{display:none}
-.cell:has(.door){z-index:12!important}.cell:has(.hero-layer i){z-index:18!important}.door{z-index:50!important}.door.targeted{outline:3px solid #f2d548;box-shadow:0 0 14px #f2d548}
+.cell:has(.door){z-index:12!important}.cell:has(.hero-layer i){z-index:18!important}.door{z-index:50!important;width:58%!important;height:25px!important;left:21%!important;bottom:-12px!important;border:0!important;color:transparent!important;background:url('/door-closed-v2.png') center/contain no-repeat!important;filter:drop-shadow(0 3px 3px #000);box-shadow:none!important;pointer-events:none}.door.opened{background-image:url('/door-breached-v2.png')!important;transform:none!important}.door-top{top:-12px!important;bottom:auto!important}.door-left,.door-right{top:39%!important;bottom:auto!important}.door-left{left:-29%!important;transform:rotate(90deg)!important}.door-right{left:71%!important;right:auto!important;transform:rotate(90deg)!important}.door-left.opened,.door-right.opened{transform:rotate(90deg)!important}.door.targeted{outline:3px solid #f2d548;box-shadow:0 0 14px #f2d548!important}
 .pieces{z-index:auto!important;pointer-events:none}.zombie-layer{z-index:20!important}.crate{z-index:30!important}.hero-layer{z-index:40!important}.tilelabel{z-index:6}
 .zombie-piece{z-index:20}.survivor-piece{z-index:40}
 

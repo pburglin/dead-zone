@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-17"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-18"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -116,7 +116,15 @@ test("synchronizes staged online setup and keeps co-located tokens visible", asy
   for (const feature of ["lobbyPhase", "lobbyMission", "lobbyHeroes", "updateLobby", 'updateLobby("setup")', 'updateLobby("playing"', "WAITING FOR HOST TO SELECT", "WAITING FOR HOST TO LAUNCH", "WAITING FOR HOST TO BEGIN", "function beginMission"]) assert.ok(source.includes(feature), `missing synchronized lobby phase ${feature}`);
   for (const feature of ["freeHandSwap", 'picked.area==="hands"&&area==="hands"', "Switching hands is free"]) assert.ok(source.includes(feature), `missing free hand swap ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
-  for (const feature of [".zombie-layer{inset:3% 42%", ".hero-layer{inset:23%", "waiting-host"]) assert.ok(motion.includes(feature), `missing staged token visual ${feature}`);
+  for (const feature of [".zombie-layer{inset:2% 45%", ".hero-layer{inset:3%", "waiting-host"]) assert.ok(motion.includes(feature), `missing staged token visual ${feature}`);
+});
+
+test("distributes crowded tokens and renders connected streets with premium props", async () => {
+  for (const feature of ["token-count-${hs.length}", "token-count-${zs.length}", "roadDirs", "road-lines", "streetlight", "targetToken", 'event.kind==="bite"?".survivor-piece":".zombie-piece"', "many-survivors"]) assert.ok(source.includes(feature), `missing map layout feature ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8"),visual=await readFile(new URL("../app/visual-fixes.css",import.meta.url),"utf8");
+  for (const feature of ["token-count-1", "token-count-2", "token-count-3", "token-count-4", "token-count-5", "token-count-6", "sidewalk", "road-lines .road-n", "streetlight-v1.png", "squad.many-survivors"]) assert.ok(motion.includes(feature), `missing formation or road style ${feature}`);
+  for (const feature of ["door-closed-v2.png", "door-breached-v2.png"]) assert.ok(visual.includes(feature), `missing door art ${feature}`);
+  await Promise.all([access(new URL("../public/door-closed-v2.png",import.meta.url)),access(new URL("../public/door-breached-v2.png",import.meta.url)),access(new URL("../public/streetlight-v1.png",import.meta.url))]);
 });
 
 test("production output contains the game and migration", async () => {
