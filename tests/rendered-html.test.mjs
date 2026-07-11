@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-15"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-16"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -104,6 +104,12 @@ test("enforces rifle minimum range and improves combat and outcome feedback", as
 
 test("allows same-zone teammate healing and random item loss on hits", () => {
   for (const feature of ["function healTeammate", "FIELD MEDIC · SAME ZONE", "USE MEDKIT ON", "patient.hp=Math.min(3,patient.hp+2)", "Math.random()<.3", "const possessions=", "LOST ${lost.item!.name.toUpperCase()}"]) assert.ok(source.includes(feature), `missing injury inventory rule ${feature}`);
+});
+
+test("synchronizes newer room state bidirectionally with revisions", () => {
+  for (const feature of ["lastRevision", "pendingWrites", "writeQueue", "writeQueue.current.then", "data.revision>lastRevision.current", "pendingWrites.current===0", "lastSyncEvent", "setInterval", "},500)"]) assert.ok(source.includes(feature), `missing client synchronization ${feature}`);
+  assert.ok(!source.includes("if(!isHost&&data.game_json)"), "host must accept guest updates");
+  for (const feature of ["RETURNING revision", "revision:updated.revision", "revision:room.revision"]) assert.ok(rooms.includes(feature), `missing server revision response ${feature}`);
 });
 
 test("production output contains the game and migration", async () => {
