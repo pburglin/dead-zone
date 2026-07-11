@@ -17,3 +17,12 @@
 @keyframes objective-pulse{0%{filter:drop-shadow(0 0 1px #f33);transform:scale(.95)}60%{filter:drop-shadow(0 0 12px #ff2d21);transform:scale(1.15)}100%{filter:drop-shadow(0 0 1px #f33);transform:scale(.95)}}
 @media(max-width:900px){.initiative-dock{position:sticky;left:0;bottom:0;width:100%;grid-template-columns:repeat(4,1fr)}.zoom-controls{bottom:10px}}
 @media(prefers-reduced-motion:reduce){.survivor-piece,.zombie-piece,.crate.hot{animation:none!important}.boardwrap{scroll-behavior:auto}}
+
+.landing-atmosphere{position:fixed;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;mix-blend-mode:screen}
+.menu>*:not(.background-fires):not(.zombie-silhouette){z-index:5}
+.background-fires{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;mix-blend-mode:screen}
+.background-fires i{position:absolute;bottom:-10%;width:22vw;height:44vh;border-radius:50%;background:radial-gradient(ellipse at 50% 70%,#ffed763d 0 9%,#ff5a1f32 18%,#bd17111c 37%,transparent 68%);filter:blur(9px);transform-origin:50% 100%;animation:fire-tremble 1.3s ease-in-out infinite alternate}
+.background-fires i:nth-child(1){left:48%;animation-delay:-.4s}.background-fires i:nth-child(2){left:69%;width:16vw;height:34vh;animation-duration:.9s}.background-fires i:nth-child(3){left:83%;width:12vw;height:28vh;animation-duration:1.7s;animation-delay:-1s}
+.build-version{position:fixed!important;left:14px;bottom:10px;color:#7b8178!important;font:9px/1 Arial!important;letter-spacing:.15em!important;z-index:8!important;text-shadow:1px 1px #000}
+@keyframes fire-tremble{0%{transform:skewX(-4deg) scale(.9,1);opacity:.55}35%{transform:skewX(3deg) scale(1.08,.96);opacity:.85}70%{transform:skewX(-2deg) scale(.96,1.08);opacity:.62}100%{transform:skewX(5deg) scale(1.04,.92);opacity:.9}}
+@media(prefers-reduced-motion:reduce){.background-fires i{animation:none!important;opacity:.65}}

@@ -68,6 +68,12 @@ test("supports tactical initiative, survivor specialties, and expanding animated
   for (const feature of ["overflow:auto", "survivor-breathe", "zombie-prowl", "brute-loom", "prefers-reduced-motion"]) assert.ok(motion.includes(feature), `missing map motion ${feature}`);
 });
 
+test("adds an atmospheric WebGL landing page and dated build marker", async () => {
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-10"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
+});
+
 test("production output contains the game and migration", async () => {
   await Promise.all([access(new URL("../dist/server/index.js",import.meta.url)),access(new URL("../dist/client/zombie-victory.png",import.meta.url)),access(new URL("../dist/.openai/drizzle/0000_glamorous_imperial_guard.sql",import.meta.url))]);
 });
