@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-16"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-17"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -110,6 +110,13 @@ test("synchronizes newer room state bidirectionally with revisions", () => {
   for (const feature of ["lastRevision", "pendingWrites", "writeQueue", "writeQueue.current.then", "data.revision>lastRevision.current", "pendingWrites.current===0", "lastSyncEvent", "setInterval", "},500)"]) assert.ok(source.includes(feature), `missing client synchronization ${feature}`);
   assert.ok(!source.includes("if(!isHost&&data.game_json)"), "host must accept guest updates");
   for (const feature of ["RETURNING revision", "revision:updated.revision", "revision:room.revision"]) assert.ok(rooms.includes(feature), `missing server revision response ${feature}`);
+});
+
+test("synchronizes staged online setup and keeps co-located tokens visible", async () => {
+  for (const feature of ["lobbyPhase", "lobbyMission", "lobbyHeroes", "updateLobby", 'updateLobby("setup")', 'updateLobby("playing"', "WAITING FOR HOST TO SELECT", "WAITING FOR HOST TO LAUNCH", "WAITING FOR HOST TO BEGIN", "function beginMission"]) assert.ok(source.includes(feature), `missing synchronized lobby phase ${feature}`);
+  for (const feature of ["freeHandSwap", 'picked.area==="hands"&&area==="hands"', "Switching hands is free"]) assert.ok(source.includes(feature), `missing free hand swap ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of [".zombie-layer{inset:3% 42%", ".hero-layer{inset:23%", "waiting-host"]) assert.ok(motion.includes(feature), `missing staged token visual ${feature}`);
 });
 
 test("production output contains the game and migration", async () => {
