@@ -6,15 +6,20 @@
 .initiative-dock button:disabled{opacity:.35;cursor:default}.initiative-dock button:not(:disabled):hover{background:#b42f29}.initiative-dock b{color:#e3ce47}
 .zoom-controls{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:35;display:flex;align-items:center;background:#0b0d0be8;border:1px solid #687064;box-shadow:3px 4px 14px #000}
 .zoom-controls button{width:38px;height:34px;background:#292e28;color:#fff;border:0;font-size:22px}.zoom-controls span{min-width:62px;text-align:center;font:11px Arial;color:#e4d34d}
-.hero-layer .survivor-piece{animation:survivor-breathe 2.4s ease-in-out infinite;transform-origin:50% 85%}
+.hero-layer .survivor-piece{animation:token-arrive .28s ease-out,survivor-breathe 2.4s .28s ease-in-out infinite;transform-origin:50% 85%}
 .cell[data-active="true"] .survivor-piece{animation:active-survivor 1.15s ease-in-out infinite;filter:drop-shadow(0 0 7px #f4d93e)}
-.zombie-layer .zombie-piece{animation:zombie-prowl 2.1s ease-in-out infinite;transform-origin:50% 90%}.zombie-layer .zombie-piece:nth-child(2n){animation-delay:-.7s}.zombie-layer .zombie-runner{animation-duration:.7s}.zombie-layer .zombie-brute{animation-name:brute-loom;animation-duration:1.5s}
+.zombie-layer .zombie-piece{animation:token-arrive .28s ease-out,zombie-prowl 2.1s .28s ease-in-out infinite;transform-origin:50% 90%}.zombie-layer .zombie-piece:nth-child(2n){animation-delay:0s,-.7s}.zombie-layer .zombie-runner{animation-duration:.22s,.7s}.zombie-layer .zombie-brute{animation-name:token-arrive,brute-loom;animation-duration:.28s,1.5s}
+.zombie-layer .zombie-piece.dying{animation:zombieburst .85s ease-out both!important}
 .crate.hot{animation:objective-pulse 1s ease-out infinite}
 @keyframes survivor-breathe{0%,100%{transform:rotate(-1deg) scale(1)}50%{transform:rotate(1.5deg) scale(1.035)}}
 @keyframes active-survivor{0%,100%{transform:rotate(-2deg) scale(1)}50%{transform:rotate(2deg) scale(1.1)}}
 @keyframes zombie-prowl{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(4deg) translateY(-3px) scale(1.03)}}
 @keyframes brute-loom{0%,100%{transform:scale(1) rotate(-1deg)}50%{transform:scale(1.08) rotate(1deg)}}
 @keyframes objective-pulse{0%{filter:drop-shadow(0 0 1px #f33);transform:scale(.95)}60%{filter:drop-shadow(0 0 12px #ff2d21);transform:scale(1.15)}100%{filter:drop-shadow(0 0 1px #f33);transform:scale(.95)}}
+@keyframes token-arrive{0%{opacity:.35;transform:translate(-18px,12px) scale(.72) rotate(-9deg)}70%{opacity:1;transform:translate(3px,-2px) scale(1.05) rotate(2deg)}100%{transform:translate(0) scale(1)}}
+.action-tip{position:relative}.action-tip button:disabled{cursor:not-allowed;opacity:.38;filter:grayscale(1);background:#171a17!important;border-color:#30342f!important}
+.action-tip:after{content:attr(data-tooltip);position:absolute;right:100%;top:50%;transform:translate(-9px,-50%);width:190px;padding:8px 10px;background:#ead452;color:#171917;border:1px solid #171917;box-shadow:4px 4px #000;font:10px/1.3 Arial;letter-spacing:.02em;opacity:0;visibility:hidden;pointer-events:none;z-index:80}
+.action-tip:hover:after,.action-tip:focus-within:after{opacity:1;visibility:visible}
 @media(max-width:900px){.initiative-dock{position:sticky;left:0;bottom:0;width:100%;grid-template-columns:repeat(4,1fr)}.zoom-controls{bottom:10px}}
 @media(prefers-reduced-motion:reduce){.survivor-piece,.zombie-piece,.crate.hot{animation:none!important}.boardwrap{scroll-behavior:auto}}
 

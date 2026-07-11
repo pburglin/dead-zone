@@ -56,7 +56,7 @@ test("moves traded items atomically, turns fallen survivors, and keeps evac rout
 test("targets exact doors, layers board assets, separates survivor art, and marks sewer spawns", async () => {
   for (const feature of ["selectedDoor", "setSelectedDoor(door)", "selectedDoor&&nearby.includes(selectedDoor)", "zombie-layer", "hero-layer", "spawn-hole"]) assert.ok(source.includes(feature), `missing board correction ${feature}`);
   const visual=await readFile(new URL("../app/visual-fixes.css",import.meta.url),"utf8");
-  for (const feature of ["z-index:10", "z-index:20", "z-index:30", "z-index:40", "survivor-bodies.png", "survivor-portraits.png", "aspect-ratio:3/4", "aspect-ratio:1"]) assert.ok(visual.includes(feature), `missing visual layer ${feature}`);
+  for (const feature of ["z-index:50", "z-index:20", "z-index:30", "z-index:40", "survivor-bodies.png", "survivor-portraits.png", "aspect-ratio:3/4", "aspect-ratio:1"]) assert.ok(visual.includes(feature), `missing visual layer ${feature}`);
   await Promise.all([access(new URL("../public/survivor-bodies.png",import.meta.url)),access(new URL("../public/survivor-portraits.png",import.meta.url))]);
 });
 
@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-12"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-13"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -84,6 +84,14 @@ test("cancels rooms immediately and exposes one accessible audio control set", a
   for (const feature of ["Turn music off", "Turn music on", "Turn sound effects off", "Turn sound effects on", "data-tooltip"]) assert.ok(source.includes(feature), `missing audio control behavior ${feature}`);
   const audioCss=await readFile(new URL("../app/audio.css",import.meta.url),"utf8");
   for (const feature of ["content:attr(data-tooltip)", ":hover:after", ":focus-visible:after"]) assert.ok(audioCss.includes(feature), `missing tooltip style ${feature}`);
+});
+
+test("disables unavailable actions and improves board feedback", async () => {
+  for (const feature of ["canSearch", "canOpenDoor", "canHeal", "Equip a Medkit in your hand", "Stand beside a closed door", "No more APs left to move", "isDeath?145", "disabled={!canSearch}", "disabled={!canOpenDoor}", "disabled={!canHeal}"]) assert.ok(source.includes(feature), `missing action feedback ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8"),visual=await readFile(new URL("../app/visual-fixes.css",import.meta.url),"utf8");
+  for (const feature of ["action-tip", "token-arrive", "button:disabled"]) assert.ok(motion.includes(feature), `missing interaction visual ${feature}`);
+  for (const feature of ["sewer-manhole-v2.png", ".cell:has(.door)", "z-index:50"]) assert.ok(visual.includes(feature), `missing layered asset ${feature}`);
+  await access(new URL("../public/sewer-manhole-v2.png",import.meta.url));
 });
 
 test("production output contains the game and migration", async () => {
