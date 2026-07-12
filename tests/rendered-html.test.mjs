@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-21"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-22"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -125,6 +125,10 @@ test("distributes crowded tokens and renders connected streets with premium prop
   for (const feature of ["token-count-1", "token-count-2", "token-count-3", "token-count-4", "token-count-5", "token-count-6", "sidewalk", "road-lines .road-n", "streetlight-v1.png", "squad.many-survivors"]) assert.ok(motion.includes(feature), `missing formation or road style ${feature}`);
   for (const feature of ["door-closed-v2.png", "door-breached-v2.png"]) assert.ok(visual.includes(feature), `missing door art ${feature}`);
   await Promise.all([access(new URL("../public/door-closed-v2.png",import.meta.url)),access(new URL("../public/door-breached-v2.png",import.meta.url)),access(new URL("../public/streetlight-v1.png",import.meta.url))]);
+});
+
+test("anchors hit particles to the exact token in a full-screen WebGL viewport", () => {
+  for (const feature of ['[data-token="${event.token}"]', "getBoundingClientRect()", "rect.left+rect.width/2", "rect.top+rect.height/2", "devicePixelRatio||1", "gl.viewport(0,0,c.width,c.height)", "q.size*q.life*dpr"]) assert.ok(source.includes(feature), `missing particle positioning safeguard ${feature}`);
 });
 
 test("supports documented keyboard shortcuts and AP-aware turn confirmation", () => {
