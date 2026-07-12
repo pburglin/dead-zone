@@ -1,0 +1,38 @@
+plugins {
+    id "com.android.application"
+}
+
+def signingDir = rootProject.file("signing")
+def passwordFile = new File(signingDir, "upload-key-password.txt")
+def uploadPassword = passwordFile.exists() ? passwordFile.text.trim() : null
+
+android {
+    namespace "com.rocketenterprises.deadzone"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.rocketenterprises.deadzone"
+        minSdk 23
+        targetSdk 35
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    signingConfigs {
+        release {
+            if (uploadPassword) {
+                storeFile new File(signingDir, "dead-zone-upload.jks")
+                storePassword uploadPassword
+                keyAlias "samurai-soccer-upload"
+                keyPassword uploadPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (uploadPassword) signingConfig signingConfigs.release
+        }
+    }
+}
