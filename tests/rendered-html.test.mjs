@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-25"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-26"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -168,6 +168,14 @@ test("mission one bottom sewer spawn has a real pre-breached door into the rooms
   assert.ok(source.includes('["7,4|7,5","7,4"]'), "missing registered door edge above the bottom spawn");
   assert.ok(source.includes('initialOpenDoors:["7,4|7,5"]'), "bottom spawn door must begin breached");
   assert.ok(source.includes("return map.doors.has(e)&&open.includes(e)"), "movement must require a registered open door");
+});
+
+test("renders realistic worn streets with deterministic illustrated debris", async () => {
+  for (const feature of ["propKind=(x*17+y*23+map.w)%19", "hasStreetProp", "street-prop", "prop-${propKind}"]) assert.ok(source.includes(feature), `missing deterministic street prop ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of ["street-props-v1.png", ".street-prop.prop-0", ".street-prop.prop-1", ".street-prop.prop-2", ".street-prop.prop-3", "#d4d1c4", "opacity:.42", ".road-lines:after{display:none}"]) assert.ok(motion.includes(feature), `missing realistic street treatment ${feature}`);
+  assert.ok(!motion.includes("#d7c35d"), "distracting yellow road paint must be removed");
+  await access(new URL("../public/street-props-v1.png",import.meta.url));
 });
 
 test("production output contains the game and migration", async () => {
