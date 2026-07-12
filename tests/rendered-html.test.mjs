@@ -33,7 +33,7 @@ test("supports host termination and a recoverable illustrated defeat", () => {
 
 test("uses illustrated equipment and blocks room boundaries without open doors", () => {
   for (const feature of ["equipment-atlas.png", "item-rifle", "item-shotgun", "item-medkit", "background-size:1110% 465%", "linear-gradient(0deg"]) assert.ok(css.includes(feature), `missing visual correction ${feature}`);
-  for (const feature of ["const canCross", "map.walls.has(key)", "map.doors.has(e)&&open.includes(e)", "pathTo(z,t,g.openDoors)"]) assert.ok(source.includes(feature), `missing movement guard ${feature}`);
+  for (const feature of ["const canCross", "map.walls.has(key)", "map.doors.has(e)&&open.includes(e)", "pathTo(z,t,g.openDoors,zArea)"]) assert.ok(source.includes(feature), `missing movement guard ${feature}`);
 });
 
 test("supports mission selection, eight survivors, directional doors, pathfinding, and correct range", () => {
@@ -61,7 +61,7 @@ test("targets exact doors, layers board assets, separates survivor art, and mark
 });
 
 test("supports tactical initiative, survivor specialties, and expanding animated maps", async () => {
-  for (const feature of ["yieldTo", "INITIATIVE PASSED", "SLIPPERY", "FREE SEARCH", "FREE MOVE", "BONUS MELEE", "BONUS RANGED", "MELEE +1 DMG", "RANGED +1 DMG", "map.w*map.h", "i%map.w", "scrollIntoView", "zoom-controls", "data-active"]) assert.ok(source.includes(feature), `missing tactical expansion ${feature}`);
+  for (const feature of ["yieldTo", "INITIATIVE PASSED", "SLIPPERY", "FREE SEARCH", "FREE MOVE", "BONUS MELEE", "BONUS RANGED", "MELEE +1 DMG", "RANGED +1 DMG", "area.w*area.h", "i%area.w", "scrollIntoView", "zoom-controls", "data-active"]) assert.ok(source.includes(feature), `missing tactical expansion ${feature}`);
   assert.ok(source.includes('if(target&&weapon.damage>0&&d>=minimumRange&&lineOfSight(hero,target,effectiveRange)){attack(target.id);return}'));
   assert.ok(source.includes('if(d===1){const trapped='), "an adjacent occupied zone must remain a valid move destination");
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-26"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-27"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -171,11 +171,19 @@ test("mission one bottom sewer spawn has a real pre-breached door into the rooms
 });
 
 test("renders realistic worn streets with deterministic illustrated debris", async () => {
-  for (const feature of ["propKind=(x*17+y*23+map.w)%19", "hasStreetProp", "street-prop", "prop-${propKind}"]) assert.ok(source.includes(feature), `missing deterministic street prop ${feature}`);
+  for (const feature of ["propKind=(x*17+y*23+area.w+floor*7)%19", "hasStreetProp", "street-prop", "prop-${propKind}"]) assert.ok(source.includes(feature), `missing deterministic street prop ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["street-props-v1.png", ".street-prop.prop-0", ".street-prop.prop-1", ".street-prop.prop-2", ".street-prop.prop-3", "#d4d1c4", "opacity:.42", ".road-lines:after{display:none}"]) assert.ok(motion.includes(feature), `missing realistic street treatment ${feature}`);
   assert.ok(!motion.includes("#d7c35d"), "distracting yellow road paint must be removed");
   await access(new URL("../public/street-props-v1.png",import.meta.url));
+});
+
+test("supports multi-floor missions, stairs, hidden zombies, and active-floor centering", async () => {
+  for (const feature of ["type FloorArea", "type StairLink", "roomFloor(1", '"UPLINK UPPER FLOOR"', "roomFloor(-1", '"BIO-CONTAINMENT BASEMENT"', 'kind:"up"', 'kind:"down"', "floorObjectives", "hiddenZombies", "Math.random()*open.length", "stairAt", "takes the stairs", "areaKey", "levelFor", "area.w*area.h", "(z.floor||0)===floor", "(h.floor||0)===floor", "totalObjectives", "floor-indicator", "floorname", "scrollIntoView", "floor,hero.x,hero.y"]) assert.ok(source.includes(feature), `missing multi-floor feature ${feature}`);
+  for (const feature of ['["1,1","5,3"]', '["1,1","6,1","6,4"]', "MISSION OBJECTIVE SECURED", "STREET LEVEL", "UPPER FLOOR", "BASEMENT"]) assert.ok(source.includes(feature), `missing floor objective or navigation ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of ["stairs-atlas-v1.png", ".stairs-up", ".stairs-down", ".floor-indicator", ".floorname"]) assert.ok(motion.includes(feature), `missing stair visual ${feature}`);
+  await access(new URL("../public/stairs-atlas-v1.png",import.meta.url));
 });
 
 test("production output contains the game and migration", async () => {
