@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-22"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-23"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -131,6 +131,13 @@ test("anchors hit particles to the exact token in a full-screen WebGL viewport",
   for (const feature of ['[data-token="${event.token}"]', "getBoundingClientRect()", "rect.left+rect.width/2", "rect.top+rect.height/2", "devicePixelRatio||1", "gl.viewport(0,0,c.width,c.height)", "q.size*q.life*dpr"]) assert.ok(source.includes(feature), `missing particle positioning safeguard ${feature}`);
 });
 
+test("adds cure mission, synchronized fog of war, and matching boss presentation", async () => {
+  for (const feature of ['id:"cure-protocol"', 'title:"THE CURE PROTOCOL"', "Helix Laboratory", "objectiveCount:8", "w:18,h:12", "labRoads", "labBuildings", "labWalls", "spawn:[{x:0,y:6},{x:3,y:0},{x:8,y:11},{x:13,y:0},{x:17,y:6},{x:13,y:11}]", "fogEnabled", "lobbyFog", "chosenFog", "visited", "isRevealed", "Math.abs(vx-x)+Math.abs(vy-y)<=2", "fog-cover", "FOG OF WAR", "LandingAtmosphere active/>"]) assert.ok(source.includes(feature), `missing cure or fog feature ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of ["zombie-abomination-v2.png", "width:78px", "height:108px", ".fog-cover", "fog-dust-drift", ".fog-choice"]) assert.ok(motion.includes(feature), `missing boss or fog styling ${feature}`);
+  await access(new URL("../public/zombie-abomination-v2.png",import.meta.url));
+});
+
 test("supports documented keyboard shortcuts and AP-aware turn confirmation", () => {
   for (const feature of ["confirmEndTurn", "function switchHands", 'e.code==="Space"', 'e.key==="1"', 'e.key==="Escape"', "END TURN ANYWAY", "KEEP ACTING", "⌨ KEYBOARD SHORTCUTS", "SPACE", "Switch primary and secondary", "Close Loadout"]) assert.ok(source.includes(feature), `missing keyboard behavior ${feature}`);
   assert.ok(source.includes('if(hero.actions>0)setConfirmEndTurn(true);else endTurn()'));
@@ -148,8 +155,8 @@ test("expands inventory, bosses, weapons, and path-safe missions", async () => {
   assert.ok(!source.includes("PASS INITIATIVE"));
   assert.ok(source.includes(":yieldTo(i)"));
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
-  for (const feature of ["item-empty-hand.png", "item-molotov.png", "zombie-abomination.png", ".slots .discard"]) assert.ok(motion.includes(feature), `missing expansion art style ${feature}`);
-  await Promise.all([access(new URL("../public/item-empty-hand.png",import.meta.url)),access(new URL("../public/item-molotov.png",import.meta.url)),access(new URL("../public/zombie-abomination.png",import.meta.url))]);
+  for (const feature of ["item-empty-hand.png", "item-molotov.png", "zombie-abomination-v2.png", ".slots .discard"]) assert.ok(motion.includes(feature), `missing expansion art style ${feature}`);
+  await Promise.all([access(new URL("../public/item-empty-hand.png",import.meta.url)),access(new URL("../public/item-molotov.png",import.meta.url)),access(new URL("../public/zombie-abomination-v2.png",import.meta.url))]);
 });
 
 test("production output contains the game and migration", async () => {
