@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-23"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-24"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -139,8 +139,13 @@ test("adds cure mission, synchronized fog of war, and matching boss presentation
 });
 
 test("supports documented keyboard shortcuts and AP-aware turn confirmation", () => {
-  for (const feature of ["confirmEndTurn", "function switchHands", 'e.code==="Space"', 'e.key==="1"', 'e.key==="Escape"', "END TURN ANYWAY", "KEEP ACTING", "⌨ KEYBOARD SHORTCUTS", "SPACE", "Switch primary and secondary", "Close Loadout"]) assert.ok(source.includes(feature), `missing keyboard behavior ${feature}`);
+  for (const feature of ["confirmEndTurn", "function switchHands", 'e.code==="Space"', 'e.key==="1"', 'e.key==="Escape"', 'e.key.toLowerCase()==="i"', 'e.key.toLowerCase()==="m"', 'e.key.toLowerCase()==="b"', 'e.key.toLowerCase()==="s"', "setInventory(true)", "heal()", "openDoor()", "search()", "END TURN ANYWAY", "KEEP ACTING", "⌨ KEYBOARD SHORTCUTS", "SPACE", "Open the selected survivor’s inventory", "Use an equipped Medkit", "Open or break a nearby selected door", "Search the current room", "Switch primary and secondary", "Close Loadout"]) assert.ok(source.includes(feature), `missing keyboard behavior ${feature}`);
   assert.ok(source.includes('if(hero.actions>0)setConfirmEndTurn(true);else endTurn()'));
+});
+
+test("colors danger escalation with themed low, orange, and red states", async () => {
+  const global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
+  for (const feature of [".danger.d1 b", ".danger.d2 b,.danger.d3 b", "#ef7f32", ".danger.d4 b", "#e43b32"]) assert.ok(global.includes(feature), `missing danger color state ${feature}`);
 });
 
 test("highlights only the active survivor and animates token position changes", async () => {
