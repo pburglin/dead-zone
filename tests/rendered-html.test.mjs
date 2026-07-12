@@ -62,14 +62,14 @@ test("targets exact doors, layers board assets, separates survivor art, and mark
 
 test("supports tactical initiative, survivor specialties, and expanding animated maps", async () => {
   for (const feature of ["yieldTo", "INITIATIVE PASSED", "SLIPPERY", "FREE SEARCH", "FREE MOVE", "BONUS MELEE", "BONUS RANGED", "MELEE +1 DMG", "RANGED +1 DMG", "map.w*map.h", "i%map.w", "scrollIntoView", "zoom-controls", "data-active"]) assert.ok(source.includes(feature), `missing tactical expansion ${feature}`);
-  assert.ok(source.includes('if(target&&d>=minimumRange&&lineOfSight(hero,target,effectiveRange)){attack(target.id);return}'));
+  assert.ok(source.includes('if(target&&weapon.damage>0&&d>=minimumRange&&lineOfSight(hero,target,effectiveRange)){attack(target.id);return}'));
   assert.ok(source.includes('if(d===1){const trapped='), "an adjacent occupied zone must remain a valid move destination");
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["overflow:auto", "survivor-breathe", "zombie-prowl", "brute-loom", "prefers-reduced-motion"]) assert.ok(motion.includes(feature), `missing map motion ${feature}`);
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-19"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260711-21"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -89,14 +89,14 @@ test("cancels rooms immediately and exposes one accessible audio control set", a
 test("disables unavailable actions and improves board feedback", async () => {
   for (const feature of ["canSearch", "canOpenDoor", "canHeal", "Equip a Medkit in your hand", "Stand beside a closed door", "No more APs left to move", "isDeath?145", "disabled={!canSearch}", "disabled={!canOpenDoor}", "disabled={!canHeal}"]) assert.ok(source.includes(feature), `missing action feedback ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8"),visual=await readFile(new URL("../app/visual-fixes.css",import.meta.url),"utf8");
-  for (const feature of ["action-tip", "token-arrive", "button:disabled"]) assert.ok(motion.includes(feature), `missing interaction visual ${feature}`);
+  for (const feature of ["action-tip", "will-change:transform", "button:disabled"]) assert.ok(motion.includes(feature), `missing interaction visual ${feature}`);
   for (const feature of ["sewer-manhole-v2.png", ".cell:has(.door)", "z-index:50"]) assert.ok(visual.includes(feature), `missing layered asset ${feature}`);
   await access(new URL("../public/sewer-manhole-v2.png",import.meta.url));
 });
 
 test("enforces rifle minimum range and improves combat and outcome feedback", async () => {
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8"),global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
-  for (const feature of ['minimumRange=weapon.name==="Rifle"?1:0', "d>=minimumRange", "getBoundingClientRect", "HAS TURNED!", "HIT!", "data-tooltip={h.name}", "Zombie`", "survivor-victory.png", "outcome-fires"]) assert.ok((source+global).includes(feature), `missing combat feedback ${feature}`);
+  for (const feature of ['minimumRange=weapon.name==="Rifle"?1:0', "d>=minimumRange", "getBoundingClientRect", "HAS TURNED!", "HIT FOR", "data-tooltip={h.name}", "Zombie`", "survivor-victory.png", "outcome-fires"]) assert.ok((source+global).includes(feature), `missing combat feedback ${feature}`);
   assert.ok(motion.includes(".survivor-piece[data-tooltip]:hover:after"));
   assert.ok(global.includes(".victory"));
   await access(new URL("../public/survivor-victory.png",import.meta.url));
@@ -130,6 +130,22 @@ test("distributes crowded tokens and renders connected streets with premium prop
 test("supports documented keyboard shortcuts and AP-aware turn confirmation", () => {
   for (const feature of ["confirmEndTurn", "function switchHands", 'e.code==="Space"', 'e.key==="1"', 'e.key==="Escape"', "END TURN ANYWAY", "KEEP ACTING", "⌨ KEYBOARD SHORTCUTS", "SPACE", "Switch primary and secondary", "Close Loadout"]) assert.ok(source.includes(feature), `missing keyboard behavior ${feature}`);
   assert.ok(source.includes('if(hero.actions>0)setConfirmEndTurn(true);else endTurn()'));
+});
+
+test("highlights only the active survivor and animates token position changes", async () => {
+  for (const feature of ["useLayoutEffect", "tokenRects", "data-token", "data-token={`hero-${h.id}`}", "data-token={`zombie-${z.id}`}", 'h.id===hero.id?"active-piece":""', "getBoundingClientRect", "el.animate", "duration:260"]) assert.ok(source.includes(feature), `missing token transition ${feature}`);
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  assert.ok(motion.includes(".survivor-piece.active-piece"));
+  assert.ok(!motion.includes('.cell[data-active="true"] .survivor-piece'),"tile-level active selector must not highlight every survivor");
+});
+
+test("expands inventory, bosses, weapons, and path-safe missions", async () => {
+  for (const feature of ["function discardItem", 'area==="bag"?1:0', "Discard from hand · Free", "Discard carried item · 1 AP", "EMPTY_HAND", "Empty Hand", "Molotov", "function throwMolotov", "5 damage to every creature", 'kind:"abomination"', "hp:5", 'z.kind==="abomination"?3:1', "FIRE ON THE RIVERFRONT", "THE LAST BROADCAST", "objectiveCount:5", "objectiveCount:6", 'initialOpenDoors:["7,4|7,5"]']) assert.ok(source.includes(feature), `missing expansion rule ${feature}`);
+  assert.ok(!source.includes("PASS INITIATIVE"));
+  assert.ok(source.includes(":yieldTo(i)"));
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of ["item-empty-hand.png", "item-molotov.png", "zombie-abomination.png", ".slots .discard"]) assert.ok(motion.includes(feature), `missing expansion art style ${feature}`);
+  await Promise.all([access(new URL("../public/item-empty-hand.png",import.meta.url)),access(new URL("../public/item-molotov.png",import.meta.url)),access(new URL("../public/zombie-abomination.png",import.meta.url))]);
 });
 
 test("production output contains the game and migration", async () => {
