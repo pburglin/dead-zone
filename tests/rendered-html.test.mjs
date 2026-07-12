@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-24"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-25"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -162,6 +162,12 @@ test("expands inventory, bosses, weapons, and path-safe missions", async () => {
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["item-empty-hand.png", "item-molotov.png", "zombie-abomination-v2.png", ".slots .discard"]) assert.ok(motion.includes(feature), `missing expansion art style ${feature}`);
   await Promise.all([access(new URL("../public/item-empty-hand.png",import.meta.url)),access(new URL("../public/item-molotov.png",import.meta.url)),access(new URL("../public/zombie-abomination-v2.png",import.meta.url))]);
+});
+
+test("mission one bottom sewer spawn has a real pre-breached door into the rooms", () => {
+  assert.ok(source.includes('["7,4|7,5","7,4"]'), "missing registered door edge above the bottom spawn");
+  assert.ok(source.includes('initialOpenDoors:["7,4|7,5"]'), "bottom spawn door must begin breached");
+  assert.ok(source.includes("return map.doors.has(e)&&open.includes(e)"), "movement must require a registered open door");
 });
 
 test("production output contains the game and migration", async () => {
