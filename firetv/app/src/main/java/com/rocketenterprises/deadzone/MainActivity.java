@@ -35,7 +35,11 @@ public class MainActivity extends Activity {
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setUserAgentString(settings.getUserAgentString() + " DeadZoneAndroidTV/1.0");
         gameView.setWebViewClient(new WebViewClient() {
-            @Override public void onPageFinished(WebView view, String url) { view.requestFocus(); }
+            @Override public void onPageFinished(WebView view, String url) {
+                view.requestFocus();
+                view.postDelayed(() -> focusPrimaryControl(), 350);
+                view.postDelayed(() -> focusPrimaryControl(), 1200);
+            }
         });
         setContentView(gameView);
         enterImmersiveMode();
@@ -87,7 +91,27 @@ public class MainActivity extends Activity {
     private void pulse(String key) { sendKey(key, true); sendKey(key, false); }
 
     private void sendKey(String key, boolean down) {
-        gameView.evaluateJavascript("window.deadZoneNativeInput&&window.deadZoneNativeInput('" + key + "'," + down + ")", null);
+        if (gameView == null) return;
+        String script = "(function(){"
+                + "var key='" + key + "',down=" + down + ";if(!down)return;"
+                + "var selector='button:not(:disabled),a[href],input:not(:disabled),[tabindex=\\\"0\\\"]';"
+                + "var items=Array.prototype.slice.call(document.querySelectorAll(selector)).filter(function(el){return el.offsetParent!==null;});"
+                + "var preferred=document.querySelector('.mode-grid button:not(:disabled),.mission-cards button:not(:disabled),.online-options button:not(:disabled),.game button:not(:disabled),main button:not(:disabled):not(.global-audio button)')||items[0];"
+                + "if(key==='Enter'){var active=document.activeElement;if(active&&active!==document.body&&active.click)active.click();else if(preferred)preferred.focus();return;}"
+                + "if(key.indexOf('Arrow')===0){var before=document.activeElement;if(window.deadZoneNativeInput)window.deadZoneNativeInput(key,true);"
+                + "if(document.activeElement!==before)return;var current=document.activeElement;if(items.indexOf(current)<0){if(preferred)preferred.focus();return;}"
+                + "var a=current.getBoundingClientRect(),ax=a.left+a.width/2,ay=a.top+a.height/2,dir=key.replace('Arrow','').toLowerCase();"
+                + "var candidates=items.filter(function(el){if(el===current)return false;var r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;return dir==='left'?x<ax:dir==='right'?x>ax:dir==='up'?y<ay:y>ay;})"
+                + ".map(function(el){var r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,primary=(dir==='left'||dir==='right')?Math.abs(x-ax):Math.abs(y-ay),cross=(dir==='left'||dir==='right')?Math.abs(y-ay):Math.abs(x-ax);return{el:el,score:primary+cross*2.4};})"
+                + ".sort(function(a,b){return a.score-b.score;});if(candidates[0]){candidates[0].el.focus();candidates[0].el.scrollIntoView({block:'center',inline:'center'});}return;}"
+                + "if(window.deadZoneNativeInput)window.deadZoneNativeInput(key,true);else window.dispatchEvent(new KeyboardEvent('keydown',{key:key.length===1?key.toLowerCase():key,code:key.length===1?'Key'+key.toUpperCase():key,bubbles:true}));"
+                + "})();";
+        gameView.evaluateJavascript(script, null);
+    }
+
+    private void focusPrimaryControl() {
+        if (gameView == null) return;
+        gameView.evaluateJavascript("(function(){var el=document.querySelector('.mode-grid button:not(:disabled),.mission-cards button:not(:disabled),.online-options button:not(:disabled),.game button:not(:disabled),main button:not(:disabled):not(.global-audio button)');if(el)el.focus();})();", null);
     }
 
     private String webKey(int code) {
