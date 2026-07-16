@@ -1,98 +1,76 @@
-# vinext-starter
+# Dead Zone: Last Stand
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+![Dead Zone: Last Stand](firetv/store-assets/firetv-background-1920x1080.png)
 
-## Prerequisites
+**Dead Zone: Last Stand** is a turn-based zombie survival board game for solo play, local multiplayer, and cross-platform online multiplayer. Assemble a squad of specialized survivors, search ruined city blocks for supplies, breach doors, fight escalating hordes, and complete mission objectives before reaching the evacuation zone.
 
-- Node.js `>=22.13.0`
+The game features multiple missions and multi-floor maps, fog of war, survivor skills, inventory management, animated combat, atmospheric music and effects, and six-character room codes for joining games across different devices.
 
-## Quick Start
+## Supported platforms
+
+- **Computers and tablets** — play in a modern web browser with mouse, keyboard, or touch controls.
+- **Amazon Fire TV** — Android TV package with D-pad and Fire TV remote/controller navigation.
+- **Google TV / Android TV** — controller-friendly interface for compatible Android TV devices.
+
+Cross-platform multiplayer allows players on computers, tablets, Amazon Fire TV, and Google TV to join the same game session using a six-character room code.
+
+## Screenshots
+
+### Main menu
+
+![Dead Zone main menu](firetv/store-assets/screenshot-menu-1920x1080.jpg)
+
+### Mission and survivor selection
+
+![Mission and survivor selection](firetv/store-assets/screenshot-squad-1920x1080.jpg)
+
+### Gameplay
+
+![Turn-based gameplay map](firetv/store-assets/screenshot-gameplay-1920x1080.jpg)
+
+## Highlights
+
+- Solo, same-device local multiplayer, and synchronized online multiplayer
+- Six-character room codes with optional share links
+- Multiple missions, maps, floors, objectives, and evacuation scenarios
+- Survivors with distinct combat, movement, medical, searching, and door-breaking skills
+- Melee and ranged combat with line-of-sight, walls, doors, and weapon range rules
+- Inventory loadouts, item trading, medkits, Molotov cocktails, and supply searches
+- Walkers, specialized zombies, and late-game abominations
+- Optional fog of war, music, sound effects, particles, and animated token movement
+- Mouse, keyboard, touch, D-pad, and TV controller support
+
+## Run locally
+
+Requirements: Node.js 22.13 or later.
 
 ```bash
 npm install
 npm run dev
+```
+
+Open the local address shown in the terminal. To create a production build:
+
+```bash
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+Run the automated checks with:
 
-## Included Shape
-
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npm test
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+## Fire TV / Android TV build
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+The Android TV wrapper is located in [`firetv/`](firetv/). Build a signed release with the configured Android signing environment:
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+```bash
+JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home \
+  ./firetv/gradlew -p firetv assembleRelease bundleRelease
+```
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+## Developer
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+Developed by **PBURGLIN**.
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
