@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260712-28"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260716-29"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -187,7 +187,7 @@ test("supports multi-floor missions, stairs, hidden zombies, and active-floor ce
 });
 
 test("uses six-character cross-platform rooms, TV navigation, and an About dialog", async () => {
-  for (const feature of ['"online"', "roomCodeInput", "inviteMode", 'createRoom("code")', 'createRoom("link")', "CREATE GAME CODE", "USE SHAREABLE LINK INSTEAD", "GAME CODE", "JOIN GAME", "roomId", "deadZoneNativeInput", 'platform")==="androidtv"', 'key.startsWith("Arrow")', "GAME DEVELOPER", "PBURGLIN", "RELEASE VERSION", "1.0.0 · BUILD 20260712-28"]) assert.ok(source.includes(feature), `missing cross-platform lobby or About feature ${feature}`);
+  for (const feature of ['"online"', "roomCodeInput", "inviteMode", 'createRoom("code")', 'createRoom("link")', "CREATE GAME CODE", "USE SHAREABLE LINK INSTEAD", "GAME CODE", "JOIN GAME", "roomId", "deadZoneNativeInput", 'platform")==="androidtv"', 'key.startsWith("Arrow")', "GAME DEVELOPER", "PBURGLIN", "RELEASE VERSION", "1.0.2 · BUILD 20260716-29", "activeLayer", "data-tv-primary", 'role="dialog"']) assert.ok(source.includes(feature), `missing cross-platform lobby or About feature ${feature}`);
   const api=await readFile(new URL("../app/api/rooms/route.ts",import.meta.url),"utf8");
   for (const feature of ["roomCode", 'alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"', "new Uint8Array(6)", "INSERT OR IGNORE", "trim().toUpperCase()", "attempt<8"]) assert.ok(api.includes(feature), `missing six-character room backend ${feature}`);
   const global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
@@ -197,8 +197,8 @@ test("uses six-character cross-platform rooms, TV navigation, and an About dialo
 test("ships an Android TV wrapper with controller and cross-platform support", async () => {
   const [manifest,activity,gradle]=await Promise.all([readFile(new URL("../firetv/app/src/main/AndroidManifest.xml",import.meta.url),"utf8"),readFile(new URL("../firetv/app/src/main/java/com/rocketenterprises/deadzone/MainActivity.java",import.meta.url),"utf8"),readFile(new URL("../firetv/app/build.gradle",import.meta.url),"utf8")]);
   for (const feature of ["android.software.leanback", "android.hardware.touchscreen", "android.permission.INTERNET", "LEANBACK_LAUNCHER", "screenOrientation=\"landscape\""]) assert.ok(manifest.includes(feature), `missing Android TV manifest feature ${feature}`);
-  for (const feature of ["dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv", "dispatchKeyEvent", "dispatchGenericMotionEvent", "KEYCODE_DPAD_UP", "KEYCODE_BUTTON_A", "KEYCODE_BUTTON_X", "KEYCODE_BUTTON_Y", "KEYCODE_BUTTON_L2", "KEYCODE_BUTTON_R2", "deadZoneNativeInput", "focusPrimaryControl", ".mode-grid button:not(:disabled)"]) assert.ok(activity.includes(feature), `missing controller feature ${feature}`);
-  for (const feature of ['applicationId "com.rocketenterprises.deadzone"', "targetSdk 35", "versionCode 2", 'versionName "1.0.1"']) assert.ok(gradle.includes(feature), `missing Android release setting ${feature}`);
+  for (const feature of ["dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv", "dispatchKeyEvent", "dispatchGenericMotionEvent", "KEYCODE_DPAD_UP", "KEYCODE_BUTTON_A", "KEYCODE_BUTTON_X", "KEYCODE_BUTTON_Y", "KEYCODE_BUTTON_L2", "KEYCODE_BUTTON_R2", "deadZoneNativeInput", "focusPrimaryControl", ".mode-grid button:not(:disabled)", ".missionbrief,.modal,.victory,.defeat,.sessionnotice", "target.click()", "[data-tv-primary]"]) assert.ok(activity.includes(feature), `missing controller feature ${feature}`);
+  for (const feature of ['applicationId "com.rocketenterprises.deadzone"', "targetSdk 35", "versionCode 3", 'versionName "1.0.2"']) assert.ok(gradle.includes(feature), `missing Android release setting ${feature}`);
   await Promise.all([access(new URL("../firetv/app/src/main/res/drawable-nodpi/app_icon.png",import.meta.url)),access(new URL("../firetv/app/src/main/res/drawable-nodpi/tv_banner.png",import.meta.url))]);
 });
 
