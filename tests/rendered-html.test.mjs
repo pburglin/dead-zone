@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260717-31"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260717-32"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -194,7 +194,7 @@ test("supports multi-floor missions, stairs, hidden zombies, and active-floor ce
 });
 
 test("uses six-character cross-platform rooms, TV navigation, and an About dialog", async () => {
-  for (const feature of ['"online"', "roomCodeInput", "inviteMode", 'createRoom("code")', 'createRoom("link")', "CREATE GAME CODE", "USE SHAREABLE LINK INSTEAD", "GAME CODE", "JOIN GAME", "roomId", "deadZoneNativeInput", 'platform")==="androidtv"', 'key.startsWith("Arrow")', "GAME DEVELOPER", "PBURGLIN", "RELEASE VERSION", "1.0.4 · BUILD 20260717-31", "activeLayer", "data-tv-primary", 'role="dialog"']) assert.ok(source.includes(feature), `missing cross-platform lobby or About feature ${feature}`);
+  for (const feature of ['"online"', "roomCodeInput", "inviteMode", 'createRoom("code")', 'createRoom("link")', "CREATE GAME CODE", "USE SHAREABLE LINK INSTEAD", "GAME CODE", "JOIN GAME", "roomId", "deadZoneNativeInput", 'platform")==="androidtv"', 'key.startsWith("Arrow")', "GAME DEVELOPER", "PBURGLIN", "RELEASE VERSION", "1.0.5 · BUILD 20260717-32", "activeLayer", "data-tv-primary", 'role="dialog"']) assert.ok(source.includes(feature), `missing cross-platform lobby or About feature ${feature}`);
   const api=await readFile(new URL("../app/api/rooms/route.ts",import.meta.url),"utf8");
   for (const feature of ["roomCode", 'alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"', "new Uint8Array(6)", "INSERT OR IGNORE", "trim().toUpperCase()", "attempt<8"]) assert.ok(api.includes(feature), `missing six-character room backend ${feature}`);
   const global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
@@ -204,8 +204,8 @@ test("uses six-character cross-platform rooms, TV navigation, and an About dialo
 test("ships an Android TV wrapper with controller and cross-platform support", async () => {
   const [manifest,activity,gradle]=await Promise.all([readFile(new URL("../firetv/app/src/main/AndroidManifest.xml",import.meta.url),"utf8"),readFile(new URL("../firetv/app/src/main/java/com/rocketenterprises/deadzone/MainActivity.java",import.meta.url),"utf8"),readFile(new URL("../firetv/app/build.gradle",import.meta.url),"utf8")]);
   for (const feature of ["android.software.leanback", "android.hardware.touchscreen", "android.permission.INTERNET", "LEANBACK_LAUNCHER", "screenOrientation=\"landscape\""]) assert.ok(manifest.includes(feature), `missing Android TV manifest feature ${feature}`);
-  for (const feature of ["dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv", "dispatchKeyEvent", "dispatchGenericMotionEvent", "KEYCODE_DPAD_UP", "KEYCODE_BUTTON_A", "KEYCODE_BUTTON_X", "KEYCODE_BUTTON_Y", "KEYCODE_BUTTON_L2", "KEYCODE_BUTTON_R2", "deadZoneNativeInput", "focusPrimaryControl", ".mode-grid button:not(:disabled)", ".missionbrief,.modal,.victory,.defeat,.sessionnotice", "__deadZonePendingKeys", "attempt < 20", "[data-tv-primary]"]) assert.ok(activity.includes(feature), `missing controller feature ${feature}`);
-  for (const feature of ['applicationId "com.rocketenterprises.deadzone"', "targetSdk 35", "versionCode 5", 'versionName "1.0.4"']) assert.ok(gradle.includes(feature), `missing Android release setting ${feature}`);
+  for (const feature of ["dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv&release=6", "dispatchKeyEvent", "dispatchGenericMotionEvent", "KEYCODE_DPAD_UP", "KEYCODE_BUTTON_A", "KEYCODE_BUTTON_X", "KEYCODE_BUTTON_Y", "KEYCODE_BUTTON_L2", "KEYCODE_BUTTON_R2", "deadZoneNativeInput", "focusPrimaryControl", ".mode-grid button:not(:disabled)", ".missionbrief,.modal,.victory,.defeat,.sessionnotice", "__deadZonePendingKeys", "attempt < 20", "[data-tv-primary]", "setUseWideViewPort(true)", "setLoadWithOverviewMode(true)", "LOAD_NO_CACHE", "SCREEN_ORIENTATION_LANDSCAPE", "MATCH_PARENT", "!active.closest('.global-audio')"]) assert.ok(activity.includes(feature), `missing controller feature ${feature}`);
+  for (const feature of ['applicationId "com.rocketenterprises.deadzone"', "targetSdk 35", "versionCode 6", 'versionName "1.0.5"']) assert.ok(gradle.includes(feature), `missing Android release setting ${feature}`);
   await Promise.all([access(new URL("../firetv/app/src/main/res/drawable-nodpi/app_icon.png",import.meta.url)),access(new URL("../firetv/app/src/main/res/drawable-nodpi/tv_banner.png",import.meta.url))]);
 });
 
@@ -217,6 +217,15 @@ test("uses deterministic three-region TV navigation and keeps branding out of th
   for (const feature of ["[data-tv-map]:focus", "PRESS SELECT TO ENTER MAP", ".tv-mode .cell:focus"]) assert.ok(global.includes(feature), `missing TV focus visual ${feature}`);
   const activity=await readFile(new URL("../firetv/app/src/main/java/com/rocketenterprises/deadzone/MainActivity.java",import.meta.url),"utf8");
   assert.ok(activity.includes("if(window.deadZoneNativeInput){window.deadZoneNativeInput(key,true);return;}"), "native TV input must delegate to the deterministic web focus model");
+});
+
+test("keeps the Fire TV menu inside the overscan-safe viewport without focus panning", async () => {
+  const layout=await readFile(new URL("../app/layout.tsx",import.meta.url),"utf8");
+  const global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
+  for (const feature of ['width:"device-width"', "initialScale:1", "maximumScale:1", "viewportFit:\"cover\""]) assert.ok(layout.includes(feature), `missing WebView viewport safeguard ${feature}`);
+  for (const feature of ["html,body{width:100%;max-width:100%;overflow-x:hidden}", ".tv-mode .menu{width:100%;max-width:100vw", "max(6vw,env(safe-area-inset-left))", "grid-template-columns:repeat(3,minmax(0,1fr))", "width:min(840px,88vw)", "@media(orientation:portrait)", "grid-template-columns:1fr"]) assert.ok(global.includes(feature), `missing Fire TV safe-zone layout ${feature}`);
+  assert.ok(source.includes('if(!el.closest(".menu"))el.scrollIntoView({behavior:"smooth",block:"nearest",inline:"nearest"})'), "menu focus must never pan the root document");
+  assert.ok(source.includes('document.documentElement.dataset.deadZoneTvReady="true"'), "native wrapper needs an explicit TV-ready signal");
 });
 
 test("production output contains the game and migration", async () => {

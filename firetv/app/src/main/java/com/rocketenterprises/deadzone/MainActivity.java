@@ -1,12 +1,14 @@
 package com.rocketenterprises.deadzone;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
@@ -14,23 +16,31 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
-    private static final String GAME_URL = "https://dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv";
+    private static final String GAME_URL = "https://dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv&release=6";
     private WebView gameView;
     private int axisX = 0;
     private int axisY = 0;
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         gameView = new WebView(this);
+        gameView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         gameView.setBackgroundColor(Color.BLACK);
+        gameView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         gameView.setFocusable(true);
         gameView.setFocusableInTouchMode(true);
         WebSettings settings = gameView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setSupportZoom(false);
+        settings.setTextZoom(100);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setAllowFileAccess(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         settings.setUserAgentString(settings.getUserAgentString() + " DeadZoneAndroidTV/1.0");
@@ -105,7 +115,7 @@ public class MainActivity extends Activity {
 
     private void focusPrimaryControl() {
         if (gameView == null) return;
-        gameView.evaluateJavascript("(function(){var active=document.activeElement;if(active&&active!==document.body&&active.offsetParent!==null)return;var layer=document.querySelector('.missionbrief,.modal,.victory,.defeat,.sessionnotice'),el=(layer&&layer.querySelector('[data-tv-primary]'))||(layer&&layer.querySelector('button:not(:disabled),a[href],input:not(:disabled),[tabindex=\\\"0\\\"]'))||document.querySelector('[data-tv-primary]:not(:disabled),.mode-grid button:not(:disabled),.mission-cards button:not(:disabled),.online-options button:not(:disabled)');if(el)el.focus();})();", null);
+        gameView.evaluateJavascript("(function(){var active=document.activeElement,valid=active&&active!==document.body&&active.offsetParent!==null&&!active.closest('.global-audio');if(valid)return;var layer=document.querySelector('.missionbrief,.modal,.victory,.defeat,.sessionnotice'),el=(layer&&layer.querySelector('[data-tv-primary]'))||(layer&&layer.querySelector('button:not(:disabled),a[href],input:not(:disabled),[tabindex=\\\"0\\\"]'))||document.querySelector('[data-tv-primary]:not(:disabled),.mode-grid button:not(:disabled),.mission-cards button:not(:disabled),.online-options button:not(:disabled)');if(el)el.focus();})();", null);
     }
 
     private String webKey(int code) {
