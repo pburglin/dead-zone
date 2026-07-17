@@ -94,6 +94,7 @@ public class MainActivity extends Activity {
         if (gameView == null) return;
         String script = "(function(){"
                 + "var key='" + key + "',down=" + down + ";if(!down)return;"
+                + "if(window.deadZoneNativeInput){window.deadZoneNativeInput(key,true);return;}"
                 + "var selector='button:not(:disabled),a[href],input:not(:disabled),[tabindex=\\\"0\\\"]';"
                 + "var layer=document.querySelector('.missionbrief,.modal,.victory,.defeat,.sessionnotice'),root=layer||document;"
                 + "var items=Array.prototype.slice.call(root.querySelectorAll(selector)).filter(function(el){return el.offsetParent!==null;});"

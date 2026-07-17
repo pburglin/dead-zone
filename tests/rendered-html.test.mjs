@@ -69,7 +69,7 @@ test("supports tactical initiative, survivor specialties, and expanding animated
 });
 
 test("adds an atmospheric WebGL landing page and dated build marker", async () => {
-  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260716-29"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
+  for (const feature of ["LandingAtmosphere", "landing-atmosphere", "background-fires", "BUILD 20260716-30"]) assert.ok(source.includes(feature), `missing landing atmosphere ${feature}`);
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["mix-blend-mode:screen", "fire-tremble", "build-version"]) assert.ok(motion.includes(feature), `missing landing visual ${feature}`);
 });
@@ -158,7 +158,7 @@ test("highlights only the active survivor and animates token position changes", 
 test("expands inventory, bosses, weapons, and path-safe missions", async () => {
   for (const feature of ["function discardItem", 'area==="bag"?1:0', "Discard from hand · Free", "Discard carried item · 1 AP", "EMPTY_HAND", "Empty Hand", "Molotov", "function throwMolotov", "5 damage to every creature", 'kind:"abomination"', "hp:5", 'z.kind==="abomination"?3:1', "FIRE ON THE RIVERFRONT", "THE LAST BROADCAST", "objectiveCount:5", "objectiveCount:6", 'initialOpenDoors:["7,4|7,5"]']) assert.ok(source.includes(feature), `missing expansion rule ${feature}`);
   assert.ok(!source.includes("PASS INITIATIVE"));
-  assert.ok(source.includes(":yieldTo(i)"));
+  assert.ok(source.includes("yieldTo(i)"));
   const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
   for (const feature of ["item-empty-hand.png", "item-molotov.png", "zombie-abomination-v2.png", ".slots .discard"]) assert.ok(motion.includes(feature), `missing expansion art style ${feature}`);
   await Promise.all([access(new URL("../public/item-empty-hand.png",import.meta.url)),access(new URL("../public/item-molotov.png",import.meta.url)),access(new URL("../public/zombie-abomination-v2.png",import.meta.url))]);
@@ -168,6 +168,13 @@ test("mission one bottom sewer spawn has a real pre-breached door into the rooms
   assert.ok(source.includes('["7,4|7,5","7,4"]'), "missing registered door edge above the bottom spawn");
   assert.ok(source.includes('initialOpenDoors:["7,4|7,5"]'), "bottom spawn door must begin breached");
   assert.ok(source.includes("return map.doors.has(e)&&open.includes(e)"), "movement must require a registered open door");
+});
+
+test("keeps Mission 1 EVAC visible and reveals it when the route opens", async () => {
+  assert.ok(source.includes('const exits = new Set(["7,2"])'), "Mission 1 must retain its extraction coordinate");
+  assert.ok(source.includes('(!game.objectives.length&&exits.has(`${x},${y}`))'), "an open evacuation route must reveal its EVAC tile through fog");
+  const motion=await readFile(new URL("../app/turn-map.css",import.meta.url),"utf8");
+  for (const feature of [".cell.exit", 'content:"EVAC"', "#d9ec67"]) assert.ok(motion.includes(feature), `missing high-visibility EVAC treatment ${feature}`);
 });
 
 test("renders realistic worn streets with deterministic illustrated debris", async () => {
@@ -187,7 +194,7 @@ test("supports multi-floor missions, stairs, hidden zombies, and active-floor ce
 });
 
 test("uses six-character cross-platform rooms, TV navigation, and an About dialog", async () => {
-  for (const feature of ['"online"', "roomCodeInput", "inviteMode", 'createRoom("code")', 'createRoom("link")', "CREATE GAME CODE", "USE SHAREABLE LINK INSTEAD", "GAME CODE", "JOIN GAME", "roomId", "deadZoneNativeInput", 'platform")==="androidtv"', 'key.startsWith("Arrow")', "GAME DEVELOPER", "PBURGLIN", "RELEASE VERSION", "1.0.2 · BUILD 20260716-29", "activeLayer", "data-tv-primary", 'role="dialog"']) assert.ok(source.includes(feature), `missing cross-platform lobby or About feature ${feature}`);
+  for (const feature of ['"online"', "roomCodeInput", "inviteMode", 'createRoom("code")', 'createRoom("link")', "CREATE GAME CODE", "USE SHAREABLE LINK INSTEAD", "GAME CODE", "JOIN GAME", "roomId", "deadZoneNativeInput", 'platform")==="androidtv"', 'key.startsWith("Arrow")', "GAME DEVELOPER", "PBURGLIN", "RELEASE VERSION", "1.0.3 · BUILD 20260716-30", "activeLayer", "data-tv-primary", 'role="dialog"']) assert.ok(source.includes(feature), `missing cross-platform lobby or About feature ${feature}`);
   const api=await readFile(new URL("../app/api/rooms/route.ts",import.meta.url),"utf8");
   for (const feature of ["roomCode", 'alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"', "new Uint8Array(6)", "INSERT OR IGNORE", "trim().toUpperCase()", "attempt<8"]) assert.ok(api.includes(feature), `missing six-character room backend ${feature}`);
   const global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
@@ -198,8 +205,18 @@ test("ships an Android TV wrapper with controller and cross-platform support", a
   const [manifest,activity,gradle]=await Promise.all([readFile(new URL("../firetv/app/src/main/AndroidManifest.xml",import.meta.url),"utf8"),readFile(new URL("../firetv/app/src/main/java/com/rocketenterprises/deadzone/MainActivity.java",import.meta.url),"utf8"),readFile(new URL("../firetv/app/build.gradle",import.meta.url),"utf8")]);
   for (const feature of ["android.software.leanback", "android.hardware.touchscreen", "android.permission.INTERNET", "LEANBACK_LAUNCHER", "screenOrientation=\"landscape\""]) assert.ok(manifest.includes(feature), `missing Android TV manifest feature ${feature}`);
   for (const feature of ["dead-zone-last-stand.nqdn75t9hs.chatgpt.site/?platform=androidtv", "dispatchKeyEvent", "dispatchGenericMotionEvent", "KEYCODE_DPAD_UP", "KEYCODE_BUTTON_A", "KEYCODE_BUTTON_X", "KEYCODE_BUTTON_Y", "KEYCODE_BUTTON_L2", "KEYCODE_BUTTON_R2", "deadZoneNativeInput", "focusPrimaryControl", ".mode-grid button:not(:disabled)", ".missionbrief,.modal,.victory,.defeat,.sessionnotice", "target.click()", "[data-tv-primary]"]) assert.ok(activity.includes(feature), `missing controller feature ${feature}`);
-  for (const feature of ['applicationId "com.rocketenterprises.deadzone"', "targetSdk 35", "versionCode 3", 'versionName "1.0.2"']) assert.ok(gradle.includes(feature), `missing Android release setting ${feature}`);
+  for (const feature of ['applicationId "com.rocketenterprises.deadzone"', "targetSdk 35", "versionCode 4", 'versionName "1.0.3"']) assert.ok(gradle.includes(feature), `missing Android release setting ${feature}`);
   await Promise.all([access(new URL("../firetv/app/src/main/res/drawable-nodpi/app_icon.png",import.meta.url)),access(new URL("../firetv/app/src/main/res/drawable-nodpi/tv_banner.png",import.meta.url))]);
+});
+
+test("uses deterministic three-region TV navigation and keeps branding out of the focus path", async () => {
+  for (const feature of ['data-tv-region="left"', 'data-tv-region="right"', "data-tv-map", "data-tv-cell", "data-tv-x", "data-tv-y", "navigateGame", "focusActiveCell", "focusRegion", 'current.matches("[data-tv-map]")', 'e.key==="Enter"&&target?.matches("[data-tv-map]")', "requestAnimationFrame(()=>document.querySelector<HTMLElement>(\"[data-active='true']\")?.focus())"]) assert.ok(source.includes(feature), `missing TV navigation feature ${feature}`);
+  assert.ok(source.includes('<div className="logo" aria-label="Dead Zone">DEAD ZONE</div>'), "game logo must be presentational, not a focusable button");
+  assert.ok(!source.includes('<button className="logo"'), "game logo must not return to the D-pad focus order");
+  const global=await readFile(new URL("../app/globals.css",import.meta.url),"utf8");
+  for (const feature of ["[data-tv-map]:focus", "PRESS SELECT TO ENTER MAP", ".tv-mode .cell:focus"]) assert.ok(global.includes(feature), `missing TV focus visual ${feature}`);
+  const activity=await readFile(new URL("../firetv/app/src/main/java/com/rocketenterprises/deadzone/MainActivity.java",import.meta.url),"utf8");
+  assert.ok(activity.includes("if(window.deadZoneNativeInput){window.deadZoneNativeInput(key,true);return;}"), "native TV input must delegate to the deterministic web focus model");
 });
 
 test("production output contains the game and migration", async () => {
